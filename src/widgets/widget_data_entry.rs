@@ -26,8 +26,8 @@ where
 }
 
 pub fn controls_panel(state: &GradientApp) -> Element<'_, Message> {
+    let scheme = state.theme.scheme();
     let formula = state.formula_function();
-
     let options: Vec<Function> = Function::iter().collect();
 
     let panel = column![
@@ -60,6 +60,9 @@ pub fn controls_panel(state: &GradientApp) -> Element<'_, Message> {
             1.0,
             Message::Steps
         ),
+        Space::new().height(Length::Fixed(16.0)),
+        text("THEME").size(12),
+        crate::widgets::widget_theme_picker::theme_picker(state.theme),
     ]
     .spacing(6)
     .padding(16);
@@ -67,5 +70,9 @@ pub fn controls_panel(state: &GradientApp) -> Element<'_, Message> {
     container(panel)
         .width(Length::Fixed(250.0))
         .height(Length::Fill)
+        .style(move |_| container::Style {
+            background: Some(iced::Background::Color(scheme.panel_bg)),
+            ..Default::default()
+        })
         .into()
 }
