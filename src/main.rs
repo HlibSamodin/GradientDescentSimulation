@@ -1,5 +1,7 @@
 mod app;
+mod widgets;
+use app::{update, view};
 
 fn main() -> iced::Result {
-    iced::run("Gradient Descent Simulation", app::update, app::view)
+    iced::run(update, view)
 }
