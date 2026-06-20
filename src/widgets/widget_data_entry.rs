@@ -1,7 +1,10 @@
-use crate::app::{Function, GradientApp, Message};
+use crate::{
+    app::{Function, GradientApp, Message},
+    themes::ColorScheme,
+};
 use iced::{
-    Element, Length,
-    widget::{Space, column, container, pick_list, row, slider, text},
+    widget::{column, container, pick_list, row, slider, text, Space},
+    Border, Color, Element, Length,
 };
 use strum::IntoEnumIterator;
 
@@ -11,6 +14,7 @@ fn slider_control<'a, F>(
     range: std::ops::RangeInclusive<f64>,
     step: f64,
     on_change: F,
+    color_theme: ColorScheme,
 ) -> Element<'a, Message>
 where
     F: 'a + Fn(f64) -> Message,
@@ -19,7 +23,35 @@ where
         row![text(label_text), text(format!("{:.3}", value))].spacing(10),
         slider(range, value, on_change)
             .step(step)
-            .width(Length::Fill),
+            .width(Length::Fill)
+            .style(move |_theme, status| {
+                let radius = if status == slider::Status::Hovered {
+                    8.0
+                } else {
+                    6.0
+                };
+
+                slider::Style {
+                    rail: slider::Rail {
+                        backgrounds: (
+                            color_theme.slider_fill.into(),
+                            color_theme.slider_track.into(),
+                        ),
+                        width: 4.0,
+                        border: Border {
+                            radius: 2.0.into(),
+                            width: 0.0,
+                            color: Color::TRANSPARENT,
+                        },
+                    },
+                    handle: slider::Handle {
+                        shape: slider::HandleShape::Circle { radius },
+                        background: color_theme.slider_fill.into(),
+                        border_width: 0.0,
+                        border_color: Color::TRANSPARENT,
+                    },
+                }
+            })
     ]
     .spacing(8)
     .into()
@@ -42,7 +74,8 @@ pub fn controls_panel(state: &GradientApp) -> Element<'_, Message> {
             state.learning_rate,
             0.001..=10.0,
             0.001,
-            Message::LearningRate
+            Message::LearningRate,
+            scheme,
         ),
         Space::new().height(Length::Fixed(16.0)),
         slider_control(
@@ -50,7 +83,8 @@ pub fn controls_panel(state: &GradientApp) -> Element<'_, Message> {
             state.initial_point,
             -10.0..=10.0,
             0.01,
-            Message::InitialPoint
+            Message::InitialPoint,
+            scheme,
         ),
         Space::new().height(Length::Fixed(16.0)),
         slider_control(
@@ -58,7 +92,8 @@ pub fn controls_panel(state: &GradientApp) -> Element<'_, Message> {
             state.steps,
             1.0..=1000.0,
             1.0,
-            Message::Steps
+            Message::Steps,
+            scheme,
         ),
         Space::new().height(Length::Fixed(16.0)),
         text("THEME").size(12),

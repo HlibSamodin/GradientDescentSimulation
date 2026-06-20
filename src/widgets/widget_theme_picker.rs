@@ -11,6 +11,8 @@ pub enum Theme {
 }
 
 impl Theme {
+    pub const ALL: [Self; 4] = [Self::Purple, Self::Blue, Self::Green, Self::Yellow];
+    
     fn color(&self) -> Color {
         match self {
             Theme::Purple => Color::from_rgb(0.5, 0.2, 0.8),
@@ -19,14 +21,10 @@ impl Theme {
             Theme::Yellow => Color::from_rgb(0.9, 0.7, 0.1),
         }
     }
-
-    fn all() -> &'static [Theme] {
-        &[Theme::Purple, Theme::Blue, Theme::Green, Theme::Yellow]
-    }
 }
 
 pub fn theme_picker(selected: Theme) -> Element<'static, crate::app::Message> {
-    let circles = Theme::all().iter().map(|t| {
+    let circles = Theme::ALL.iter().map(|t| {
         let color = t.color();
         let is_selected = *t == selected;
 
